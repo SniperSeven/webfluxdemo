@@ -50,10 +50,15 @@ public class TransactionService {
 
         return helloRepository.save(hello)
                 .then(userRepository.save(user)).doOnError(a -> {
+
+                    //可以在这里进行异常处理
                     System.out.println("===== cyf ==== service 当前线程: " + Thread.currentThread().getName());
                     System.out.println("========== cyf error =====: " + a.getMessage());
+
+                    //这里是开启事务
                 }).as(transactionalOperator::transactional)
-                //注意不能放到as前面去, 否则事务会失效, 或者把这个逻辑放到controller里面去
+
+                //这个主要不把异常抛到前端去, 注意不能放到as前面去, 否则事务会失效, 或者把这个逻辑放到controller里面去
                 .onErrorResume(e -> Mono.just(new User()));
     }
 }
